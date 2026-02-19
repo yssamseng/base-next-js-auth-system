@@ -2,14 +2,21 @@
 // API Types — shared request/response shapes
 // ============================================================
 
-/** Standard envelope every API response is wrapped in */
+/** Standard success envelope from the API */
 export interface ApiResponse<T = unknown> {
+  status: true;
+  transactionId: string;
+  resCode: number;
   data: T;
-  message?: string;
 }
 
-/** Shape returned by the server on error */
+/** Standard error envelope from the API */
 export interface ApiError {
-  error: string;
-  status: number;
+  status: false;
+  transactionId: string;
+  resCode: number;
+  error: {
+    developerMessage: string;
+    userMessage: string;
+  };
 }

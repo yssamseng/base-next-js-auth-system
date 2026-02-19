@@ -1,23 +1,78 @@
 // ============================================================
-// Auth Service — login / logout operations
+// Auth Service — real API calls to /auth/*
 // ============================================================
 
 import { apiClient } from "@/lib/api-client";
-import { LoginRequest, LoginResponse, LogoutResponse } from "../types";
+import { setTokens, clearTokens, getRefreshToken } from "@/lib/token";
+import type {
+  LoginRequest,
+  RegisterRequest,
+  AuthResponseData,
+  ChangePasswordRequest,
+  RefreshTokenData,
+  ApiSuccessResponse,
+  LogoutResponse,
+} from "../types";
 
 export const authService = {
   /**
-   * Authenticate with email + password.
-   * Sets an httpOnly session cookie on success.
+   * POST /auth/login
    */
-  login(credentials: LoginRequest) {
-    return apiClient.post<LoginResponse>("/api/login", credentials);
+  async login(credentials: LoginRequest) {
+    const res = await apiClient.post<ApiSuccessResponse<AuthResponseData>>(
+      "/auth/login",
+      credentials,
+      { skipAuth: true }
+    );
+    setTokens(res.data.accessToken, res.data.refreshToken);
+    return res;
   },
 
   /**
-   * Clear the session cookie.
+   * POST /auth/register
    */
-  logout() {
-    return apiClient.post<LogoutResponse>("/api/logout");
+  async register(data: RegisterRequest) {
+    const res = await apiClient.post<ApiSuccessResponse<AuthResponseData>>(
+      "/auth/register",
+      data,
+      { skipAuth: true }
+    );
+    setTokens(res.data.accessToken, res.data.refreshToken);
+    return res;
+  },
+
+  /**
+   * POST /auth/logout
+   */
+  async logout() {
+    const res = await apiClient.post<ApiSuccessResponse<LogoutResponse>>(
+      "/auth/logout"
+    );
+    clearTokens();
+    return res;
+  },
+
+  /**
+   * POST /auth/refresh-token
+   */
+  async refreshToken() {
+    const refreshToken = getRefreshToken();
+    const res = await apiClient.post<ApiSuccessResponse<RefreshTokenData>>(
+      "/auth/refresh-token",
+      { refreshToken },
+      { skipAuth: true }
+    );
+    setTokens(res.data.accessToken, res.data.refreshToken);
+    return res;
+  },
+
+  /**
+   * POST /auth/change-password
+   */
+  async changePassword(data: ChangePasswordRequest) {
+    return apiClient.post<ApiSuccessResponse<{ message: string }>>(
+      "/auth/change-password",
+      data
+    );
   },
 };

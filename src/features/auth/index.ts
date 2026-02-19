@@ -4,9 +4,11 @@
 
 // Components
 export { LoginForm } from "./components/login-form";
+export { RegisterForm } from "./components/register-form";
 
 // Hooks
 export { useLogin } from "./hooks/use-login";
+export { useRegister } from "./hooks/use-register";
 
 // Services
 export { authService } from "./services/auth.service";
@@ -14,15 +16,21 @@ export { authService } from "./services/auth.service";
 // Types
 export type {
   LoginRequest,
-  LoginResponse,
-  LogoutResponse,
+  RegisterRequest,
+  AuthResponseData,
   UserProfile,
+  UpdateProfileRequest,
+  ChangePasswordRequest,
+  ApiSuccessResponse,
+  ApiErrorResponse,
+  RefreshTokenData,
+  LogoutResponse,
 } from "./types";
 
 // Validations
-export { loginSchema } from "./validations/auth.schema";
-export type { LoginFormValues } from "./validations/auth.schema";
-
-// Data
-export { mockUsers } from "./data/mock-users";
-export type { MockUser } from "./data/mock-users";
+export { loginSchema, registerSchema, updateProfileSchema } from "./validations/auth.schema";
+export type {
+  LoginFormValues,
+  RegisterFormValues,
+  UpdateProfileFormValues,
+} from "./validations/auth.schema";
